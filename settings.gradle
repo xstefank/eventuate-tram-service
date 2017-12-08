@@ -1,4 +1,4 @@
 rootProject.name = 'eventuate-sagas'
 
-
+include 'service-model'
 
