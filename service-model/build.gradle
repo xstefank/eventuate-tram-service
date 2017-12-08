@@ -9,7 +9,7 @@ buildscript {
     }
 }
 
-group 'org.learn.eventuate'
+group 'org.eventuate.saga'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
