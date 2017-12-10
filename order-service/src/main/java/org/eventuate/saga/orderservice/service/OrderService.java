@@ -1,5 +1,6 @@
 package org.eventuate.saga.orderservice.service;
 
+import org.eventuate.saga.orderservice.model.Order;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.learn.eventuate.coreapi.ProductInfo;
 import org.slf4j.Logger;
@@ -15,7 +16,11 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public void createOrder(ProductInfo productInfo) {
+    public Order createOrder(ProductInfo productInfo) {
         log.info("processing order for " + productInfo);
+
+        Order order = orderRepository.save(new Order(productInfo));
+
+        return order;
     }
 }

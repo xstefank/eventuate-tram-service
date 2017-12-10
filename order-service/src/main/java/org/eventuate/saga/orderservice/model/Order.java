@@ -13,6 +13,11 @@ public class Order {
     private ProductInfo productInfo;
     private boolean completed;
 
+    public Order(ProductInfo productInfo) {
+        this.productInfo = productInfo;
+        this.completed = false;
+    }
+
     public String getId() {
         return id;
     }
