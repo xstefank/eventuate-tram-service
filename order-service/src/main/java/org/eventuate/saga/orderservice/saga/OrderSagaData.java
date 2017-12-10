@@ -1,9 +1,11 @@
 package org.eventuate.saga.orderservice.saga;
 
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.learn.eventuate.coreapi.ProductInfo;
 
 @ToString
+@NoArgsConstructor
 public class OrderSagaData {
 
     private String orderId;

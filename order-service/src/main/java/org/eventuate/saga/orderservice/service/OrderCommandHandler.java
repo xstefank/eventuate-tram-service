@@ -4,6 +4,7 @@ import io.eventuate.tram.commands.consumer.CommandHandlers;
 import io.eventuate.tram.commands.consumer.CommandMessage;
 import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
+import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
 import org.eventuate.saga.orderservice.command.TestCommand;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.slf4j.Logger;
@@ -26,11 +27,17 @@ public class OrderCommandHandler {
         return SagaCommandHandlersBuilder
                 .fromChannel(CHANNEL_NAME)
                 .onMessage(TestCommand.class, this::test)
+                .onMessage(CompleteOrderCommand.class, this::completeOrder)
                 .build();
     }
 
-    private Message test(CommandMessage<TestCommand> commandMessage) {
+    public Message test(CommandMessage<TestCommand> commandMessage) {
         log.info("testing command received - " + commandMessage.getCommand().getTestString());
+        return withSuccess();
+    }
+
+    public Message completeOrder(CommandMessage<CompleteOrderCommand> commandMessage) {
+        log.info("received CompleteOrderCommand");
         return withSuccess();
     }
 }
