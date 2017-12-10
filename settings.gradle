@@ -2,4 +2,5 @@ rootProject.name = 'eventuate-sagas'
 
 include 'service-model'
 include 'order-service'
+include 'shipment-service'
 
