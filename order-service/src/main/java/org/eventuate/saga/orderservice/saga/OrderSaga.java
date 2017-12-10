@@ -7,6 +7,8 @@ import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
 import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
 import org.eventuate.saga.orderservice.command.TestCommand;
 import org.eventuate.saga.orderservice.model.OrderRepository;
+import org.learn.eventuate.Constans;
+import org.learn.eventuate.coreapi.RequestShipmentCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +20,13 @@ import static io.eventuate.tram.commands.consumer.CommandWithDestinationBuilder.
 public class OrderSaga implements SimpleSaga<OrderSagaData> {
 
     private static final Logger log = LoggerFactory.getLogger(OrderSaga.class);
-    private static final String ORDER_SERVICE = "orderservice";
 
     @Autowired
     private OrderRepository orderRepository;
 
     private SagaDefinition<OrderSagaData> sagaDefinition =
             step().withCompensation(this::rejectSaga)
-//            .step().invokeParticipant(this::requestShipment)
+            .step().invokeParticipant(this::requestShipment)
 //            .step().invokeParticipant(this::requestInvoice)
             .step().invokeParticipant(this::finishOrder)
             .build();
@@ -45,14 +46,16 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
         log.info("rejectSaga()");
 
         return send(new RejectOrderSagaCommand(orderSagaData))
-                .to(ORDER_SERVICE)
+                .to(Constans.ORDER_SERVICE)
                 .build();
     }
 
     private CommandWithDestination requestShipment(OrderSagaData orderSagaData) {
         log.info("requestShipment()");
-        //TODO
-        return null;
+
+        return send(new RequestShipmentCommand(orderSagaData.getOrderId(), orderSagaData.getProductInfo()))
+                .to(Constans.SHIPMENT_SERVICE)
+                .build();
     }
 
     private CommandWithDestination requestInvoice(OrderSagaData orderSagaData) {
@@ -64,7 +67,7 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
     private CommandWithDestination finishOrder(OrderSagaData orderSagaData) {
         log.info("finishOrder()");
        return send(new CompleteOrderCommand(orderSagaData.getOrderId()))
-               .to(ORDER_SERVICE)
+               .to(Constans.ORDER_SERVICE)
                .build();
     }
 }

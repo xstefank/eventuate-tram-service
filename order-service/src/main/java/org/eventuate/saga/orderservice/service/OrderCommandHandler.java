@@ -7,6 +7,7 @@ import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
 import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
 import org.eventuate.saga.orderservice.model.OrderRepository;
+import org.learn.eventuate.Constans;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.wit
 @Component
 public class OrderCommandHandler {
 
-    private static final String CHANNEL_NAME = "orderservice";
     private static final Logger log = LoggerFactory.getLogger(OrderCommandHandler.class);
 
     @Autowired
@@ -25,7 +25,7 @@ public class OrderCommandHandler {
 
     public CommandHandlers commandHandlers() {
         return SagaCommandHandlersBuilder
-                .fromChannel(CHANNEL_NAME)
+                .fromChannel(Constans.ORDER_SERVICE)
                 .onMessage(RejectOrderSagaCommand.class, this::rejectOrder)
                 .onMessage(CompleteOrderCommand.class, this::completeOrder)
                 .build();

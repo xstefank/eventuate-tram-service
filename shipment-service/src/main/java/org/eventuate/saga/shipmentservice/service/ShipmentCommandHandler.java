@@ -5,25 +5,27 @@ import io.eventuate.tram.commands.consumer.CommandMessage;
 import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 import org.eventuate.saga.shipmentservice.model.Shipment;
+import org.learn.eventuate.Constans;
 import org.learn.eventuate.coreapi.RequestShipmentCommand;
 import org.learn.eventuate.coreapi.ShipmentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.withSuccess;
 
+@Component
 public class ShipmentCommandHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentCommandHandler.class);
-    private static final String CHANNEL_NAME = "shipmentservice";
 
     @Autowired
     private ShipmentService shipmentService;
 
     public CommandHandlers commandHandlers() {
         return SagaCommandHandlersBuilder
-                .fromChannel(CHANNEL_NAME)
+                .fromChannel(Constans.SHIPMENT_SERVICE)
                 .onMessage(RequestShipmentCommand.class, this::requestShipment)
                 .build();
     }
