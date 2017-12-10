@@ -4,9 +4,12 @@ import io.eventuate.tram.commands.consumer.CommandWithDestination;
 import io.eventuate.tram.sagas.orchestration.SagaDefinition;
 import io.eventuate.tram.sagas.simpledsl.SimpleSaga;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
+import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
 import org.eventuate.saga.orderservice.command.TestCommand;
+import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static io.eventuate.tram.commands.consumer.CommandWithDestinationBuilder.send;
@@ -15,10 +18,13 @@ import static io.eventuate.tram.commands.consumer.CommandWithDestinationBuilder.
 public class OrderSaga implements SimpleSaga<OrderSagaData> {
 
     private static final Logger log = LoggerFactory.getLogger(OrderSaga.class);
+    private static final String ORDER_SERVICE = "orderservice";
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     private SagaDefinition<OrderSagaData> sagaDefinition =
             step().withCompensation(this::rejectSaga)
-                    .step().invokeParticipant(this::testCommand)
 //            .step().invokeParticipant(this::requestShipment)
 //            .step().invokeParticipant(this::requestInvoice)
             .step().invokeParticipant(this::finishOrder)
@@ -37,8 +43,10 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
 
     private CommandWithDestination rejectSaga(OrderSagaData orderSagaData) {
         log.info("rejectSaga()");
-        //TODO
-        return null;
+
+        return send(new RejectOrderSagaCommand(orderSagaData))
+                .to(ORDER_SERVICE)
+                .build();
     }
 
     private CommandWithDestination requestShipment(OrderSagaData orderSagaData) {
@@ -56,7 +64,7 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
     private CommandWithDestination finishOrder(OrderSagaData orderSagaData) {
         log.info("finishOrder()");
        return send(new CompleteOrderCommand(orderSagaData.getOrderId()))
-               .to("orderservice")
+               .to(ORDER_SERVICE)
                .build();
     }
 }
