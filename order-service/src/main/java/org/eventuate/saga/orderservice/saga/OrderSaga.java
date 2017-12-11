@@ -5,7 +5,7 @@ import io.eventuate.tram.sagas.orchestration.SagaDefinition;
 import io.eventuate.tram.sagas.simpledsl.SimpleSaga;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
 import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
-import org.eventuate.saga.orderservice.command.ShipmentReplyCommand;
+import org.eventuate.saga.orderservice.model.Order;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.learn.eventuate.Constants;
 import org.learn.eventuate.coreapi.RequestShipmentCommand;
@@ -57,12 +57,14 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
                 .build();
     }
 
-    private CommandWithDestination shipmentReply(OrderSagaData orderSagaData, ShipmentInfo shipmentInfo) {
+    //cannot send command
+    private void shipmentReply(OrderSagaData orderSagaData, ShipmentInfo shipmentInfo) {
         log.info("shipmentReply()");
 
-        return send(new ShipmentReplyCommand(orderSagaData.getOrderId(), shipmentInfo))
-                .to(Constants.ORDER_SERVICE)
-                .build();
+        Order order = orderRepository.findOne(orderSagaData.getOrderId());
+        order.setShipmentId(shipmentInfo.getShipmentId());
+        orderRepository.save(order);
+        log.info("order updated with shipemnt - " + order);
     }
 
     private CommandWithDestination requestInvoice(OrderSagaData orderSagaData) {

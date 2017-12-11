@@ -11,6 +11,8 @@ public class Order {
     private String id;
 
     private ProductInfo productInfo;
+    private String shipmentId;
+    private String invoiceId;
     private boolean completed;
 
     public Order(ProductInfo productInfo) {
@@ -26,8 +28,24 @@ public class Order {
         return productInfo;
     }
 
+    public String getShipmentId() {
+        return shipmentId;
+    }
+
+    public String getInvoiceId() {
+        return invoiceId;
+    }
+
     public boolean isCompleted() {
         return completed;
+    }
+
+    public void setShipmentId(String shipmentId) {
+        this.shipmentId = shipmentId;
+    }
+
+    public void setInvoiceId(String invoiceId) {
+        this.invoiceId = invoiceId;
     }
 
     public void setCompleted(boolean completed) {

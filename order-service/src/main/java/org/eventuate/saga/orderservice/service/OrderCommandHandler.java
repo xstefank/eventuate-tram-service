@@ -6,7 +6,6 @@ import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
 import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
-import org.eventuate.saga.orderservice.command.ShipmentReplyCommand;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.learn.eventuate.Constants;
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ public class OrderCommandHandler {
                 .fromChannel(Constants.ORDER_SERVICE)
                 .onMessage(RejectOrderSagaCommand.class, this::rejectOrder)
                 .onMessage(CompleteOrderCommand.class, this::completeOrder)
-                .onMessage(ShipmentReplyCommand.class, this::shipmentReply)
                 .build();
     }
 
@@ -48,10 +46,4 @@ public class OrderCommandHandler {
         return withSuccess();
     }
 
-    private Message shipmentReply(CommandMessage<ShipmentReplyCommand> commandMessage) {
-        log.info("received ShipmentReplyCommand");
-        ShipmentReplyCommand command = commandMessage.getCommand();
-
-        return withSuccess();
-    }
 }
