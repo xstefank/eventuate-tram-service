@@ -6,8 +6,9 @@ import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
 import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
+import org.eventuate.saga.orderservice.command.ShipmentReplyCommand;
 import org.eventuate.saga.orderservice.model.OrderRepository;
-import org.learn.eventuate.Constans;
+import org.learn.eventuate.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,10 @@ public class OrderCommandHandler {
 
     public CommandHandlers commandHandlers() {
         return SagaCommandHandlersBuilder
-                .fromChannel(Constans.ORDER_SERVICE)
+                .fromChannel(Constants.ORDER_SERVICE)
                 .onMessage(RejectOrderSagaCommand.class, this::rejectOrder)
                 .onMessage(CompleteOrderCommand.class, this::completeOrder)
+                .onMessage(ShipmentReplyCommand.class, this::shipmentReply)
                 .build();
     }
 
@@ -43,6 +45,13 @@ public class OrderCommandHandler {
 
     public Message completeOrder(CommandMessage<CompleteOrderCommand> commandMessage) {
         log.info("received CompleteOrderCommand");
+        return withSuccess();
+    }
+
+    private Message shipmentReply(CommandMessage<ShipmentReplyCommand> commandMessage) {
+        log.info("received ShipmentReplyCommand");
+        ShipmentReplyCommand command = commandMessage.getCommand();
+
         return withSuccess();
     }
 }

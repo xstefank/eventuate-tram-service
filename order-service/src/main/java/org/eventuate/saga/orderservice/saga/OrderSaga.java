@@ -5,10 +5,11 @@ import io.eventuate.tram.sagas.orchestration.SagaDefinition;
 import io.eventuate.tram.sagas.simpledsl.SimpleSaga;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
 import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
-import org.eventuate.saga.orderservice.command.TestCommand;
+import org.eventuate.saga.orderservice.command.ShipmentReplyCommand;
 import org.eventuate.saga.orderservice.model.OrderRepository;
-import org.learn.eventuate.Constans;
+import org.learn.eventuate.Constants;
 import org.learn.eventuate.coreapi.RequestShipmentCommand;
+import org.learn.eventuate.coreapi.ShipmentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +26,15 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
     private OrderRepository orderRepository;
 
     private SagaDefinition<OrderSagaData> sagaDefinition =
-            step().withCompensation(this::rejectSaga)
-            .step().invokeParticipant(this::requestShipment)
+            step()
+                    .withCompensation(this::rejectSaga)
+            .step()
+                    .invokeParticipant(this::requestShipment)
+                    .onReply(ShipmentInfo.class, this::shipmentReply)
 //            .step().invokeParticipant(this::requestInvoice)
-            .step().invokeParticipant(this::finishOrder)
+            .step()
+                    .invokeParticipant(this::finishOrder)
             .build();
-
-    private CommandWithDestination testCommand(OrderSagaData orderSagaData) {
-        return send(new TestCommand("test string 42"))
-                .to("orderservice")
-                .build();
-    }
 
     @Override
     public SagaDefinition<OrderSagaData> getSagaDefinition() {
@@ -46,7 +45,7 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
         log.info("rejectSaga()");
 
         return send(new RejectOrderSagaCommand(orderSagaData))
-                .to(Constans.ORDER_SERVICE)
+                .to(Constants.ORDER_SERVICE)
                 .build();
     }
 
@@ -54,7 +53,15 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
         log.info("requestShipment()");
 
         return send(new RequestShipmentCommand(orderSagaData.getOrderId(), orderSagaData.getProductInfo()))
-                .to(Constans.SHIPMENT_SERVICE)
+                .to(Constants.SHIPMENT_SERVICE)
+                .build();
+    }
+
+    private CommandWithDestination shipmentReply(OrderSagaData orderSagaData, ShipmentInfo shipmentInfo) {
+        log.info("shipmentReply()");
+
+        return send(new ShipmentReplyCommand(orderSagaData.getOrderId(), shipmentInfo))
+                .to(Constants.ORDER_SERVICE)
                 .build();
     }
 
@@ -67,7 +74,7 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
     private CommandWithDestination finishOrder(OrderSagaData orderSagaData) {
         log.info("finishOrder()");
        return send(new CompleteOrderCommand(orderSagaData.getOrderId()))
-               .to(Constans.ORDER_SERVICE)
+               .to(Constants.ORDER_SERVICE)
                .build();
     }
 }

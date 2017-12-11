@@ -1,6 +1,6 @@
 package org.learn.eventuate;
 
-public class Constans {
+public class Constants {
 
     public static final String ORDER_SERVICE = "orderservice";
 

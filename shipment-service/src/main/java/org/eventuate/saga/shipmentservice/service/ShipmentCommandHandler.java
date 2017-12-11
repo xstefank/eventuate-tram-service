@@ -5,7 +5,7 @@ import io.eventuate.tram.commands.consumer.CommandMessage;
 import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 import org.eventuate.saga.shipmentservice.model.Shipment;
-import org.learn.eventuate.Constans;
+import org.learn.eventuate.Constants;
 import org.learn.eventuate.coreapi.RequestShipmentCommand;
 import org.learn.eventuate.coreapi.ShipmentInfo;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class ShipmentCommandHandler {
 
     public CommandHandlers commandHandlers() {
         return SagaCommandHandlersBuilder
-                .fromChannel(Constans.SHIPMENT_SERVICE)
+                .fromChannel(Constants.SHIPMENT_SERVICE)
                 .onMessage(RequestShipmentCommand.class, this::requestShipment)
                 .build();
     }
