@@ -8,7 +8,10 @@ import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
 import org.eventuate.saga.orderservice.model.Order;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.learn.eventuate.Constants;
+import org.learn.eventuate.coreapi.CompensateInvoiceCommand;
+import org.learn.eventuate.coreapi.CompensateShipmentCommand;
 import org.learn.eventuate.coreapi.InvoiceInfo;
+import org.learn.eventuate.coreapi.ParticipantFailureInfo;
 import org.learn.eventuate.coreapi.RequestInvoiceCommand;
 import org.learn.eventuate.coreapi.RequestShipmentCommand;
 import org.learn.eventuate.coreapi.ShipmentInfo;
@@ -32,10 +35,14 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
               .withCompensation(this::rejectSaga)
             .step()
               .invokeParticipant(this::requestShipment)
+              .withCompensation(this::shipmentCompensate)
               .onReply(ShipmentInfo.class, this::shipmentReply)
+              .onReply(ParticipantFailureInfo.class, this::shipmentFailure)
             .step()
               .invokeParticipant(this::requestInvoice)
+              .withCompensation(this::invoiceCompensate)
               .onReply(InvoiceInfo.class, this::invoiceReply)
+              .onReply(ParticipantFailureInfo.class, this::invoiceFailure)
             .step()
               .invokeParticipant(this::finishOrder)
             .build();
@@ -68,7 +75,19 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
         Order order = orderRepository.findOne(orderSagaData.getOrderId());
         order.setShipmentId(shipmentInfo.getShipmentId());
         orderRepository.save(order);
-        log.info("order updated with shipemnt - " + order);
+        log.info("order updated with shipment - " + order);
+    }
+
+    private CommandWithDestination shipmentCompensate(OrderSagaData orderSagaData) {
+        log.info("shipmentCompensate()");
+
+        return send(new CompensateShipmentCommand(orderSagaData.getOrderId()))
+                .to(Constants.SHIPMENT_SERVICE)
+                .build();
+    }
+
+    private void shipmentFailure(OrderSagaData orderSagaData, ParticipantFailureInfo failureInfo) {
+        log.info(String.format("shipmentFailure() for %s with cause %s", orderSagaData.getOrderId(), failureInfo.getCause()));
     }
 
     private CommandWithDestination requestInvoice(OrderSagaData orderSagaData) {
@@ -86,6 +105,18 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
         order.setInvoiceId(invoiceInfo.getInvoiceId());
         orderRepository.save(order);
         log.info("order updated with invoice - " + order);
+    }
+
+    private CommandWithDestination invoiceCompensate(OrderSagaData orderSagaData) {
+        log.info("invoiceCompensate()");
+
+        return send(new CompensateInvoiceCommand(orderSagaData.getOrderId()))
+                .to(Constants.INVOCE_SERVICE)
+                .build();
+    }
+
+    private void invoiceFailure(OrderSagaData orderSagaData, ParticipantFailureInfo failureInfo) {
+        log.info(String.format("invoiceFailure() for %s with cause %s", orderSagaData.getOrderId(), failureInfo.getCause()));
     }
 
     private CommandWithDestination finishOrder(OrderSagaData orderSagaData) {
