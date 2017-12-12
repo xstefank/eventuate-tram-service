@@ -6,6 +6,7 @@ import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
 import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
+import org.eventuate.saga.orderservice.model.Order;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.learn.eventuate.Constants;
 import org.slf4j.Logger;
@@ -43,6 +44,13 @@ public class OrderCommandHandler {
 
     public Message completeOrder(CommandMessage<CompleteOrderCommand> commandMessage) {
         log.info("received CompleteOrderCommand");
+        CompleteOrderCommand command = commandMessage.getCommand();
+
+        Order order = orderRepository.findOne(command.getOrderId());
+        order.setCompleted(true);
+        orderRepository.save(order);
+
+        log.info(String.format("Order %s fully completed", order));
         return withSuccess();
     }
 

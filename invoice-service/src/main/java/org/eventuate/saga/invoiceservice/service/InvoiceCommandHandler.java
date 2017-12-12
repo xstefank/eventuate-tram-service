@@ -11,9 +11,11 @@ import org.learn.eventuate.coreapi.RequestInvoiceCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.withSuccess;
 
+@Component
 public class InvoiceCommandHandler {
 
     private static final Logger log = LoggerFactory.getLogger(InvoiceCommandHandler.class);

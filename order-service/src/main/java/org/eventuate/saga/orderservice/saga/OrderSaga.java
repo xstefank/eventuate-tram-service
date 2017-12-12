@@ -8,6 +8,8 @@ import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
 import org.eventuate.saga.orderservice.model.Order;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.learn.eventuate.Constants;
+import org.learn.eventuate.coreapi.InvoiceInfo;
+import org.learn.eventuate.coreapi.RequestInvoiceCommand;
 import org.learn.eventuate.coreapi.RequestShipmentCommand;
 import org.learn.eventuate.coreapi.ShipmentInfo;
 import org.slf4j.Logger;
@@ -27,13 +29,15 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
 
     private SagaDefinition<OrderSagaData> sagaDefinition =
             step()
-                    .withCompensation(this::rejectSaga)
+              .withCompensation(this::rejectSaga)
             .step()
-                    .invokeParticipant(this::requestShipment)
-                    .onReply(ShipmentInfo.class, this::shipmentReply)
-//            .step().invokeParticipant(this::requestInvoice)
+              .invokeParticipant(this::requestShipment)
+              .onReply(ShipmentInfo.class, this::shipmentReply)
             .step()
-                    .invokeParticipant(this::finishOrder)
+              .invokeParticipant(this::requestInvoice)
+              .onReply(InvoiceInfo.class, this::invoiceReply)
+            .step()
+              .invokeParticipant(this::finishOrder)
             .build();
 
     @Override
@@ -69,13 +73,24 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
 
     private CommandWithDestination requestInvoice(OrderSagaData orderSagaData) {
         log.info("requestInvoice()");
-        //TODO
-        return null;
+
+        return send(new RequestInvoiceCommand(orderSagaData.getOrderId(), orderSagaData.getProductInfo()))
+                .to(Constants.INVOCE_SERVICE)
+                .build();
+    }
+
+    private void invoiceReply(OrderSagaData orderSagaData, InvoiceInfo invoiceInfo) {
+        log.info("invoiceReply()");
+
+        Order order = orderRepository.findOne(orderSagaData.getOrderId());
+        order.setInvoiceId(invoiceInfo.getInvoiceId());
+        orderRepository.save(order);
+        log.info("order updated with invoice - " + order);
     }
 
     private CommandWithDestination finishOrder(OrderSagaData orderSagaData) {
         log.info("finishOrder()");
-       return send(new CompleteOrderCommand(orderSagaData.getOrderId()))
+        return send(new CompleteOrderCommand(orderSagaData.getOrderId()))
                .to(Constants.ORDER_SERVICE)
                .build();
     }
