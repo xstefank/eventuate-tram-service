@@ -22,23 +22,43 @@ services:
 
 
   shipmentservice:
-      build: ./shipment-service/
-      ports:
-        - "8081:8080"
-      volumes:
-        - ./build/libs:/app
-      links:
-        - mysql
-        - kafka
-        - zookeeper
-        - cdcservice
-      environment:
-        SPRING_DATASOURCE_URL: jdbc:mysql://mysql/eventuate
-        SPRING_DATASOURCE_USERNAME: mysqluser
-        SPRING_DATASOURCE_PASSWORD: mysqlpw
-        SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.jdbc.Driver
-        EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-        EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+    build: ./shipment-service/
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./build/libs:/app
+    links:
+      - mysql
+      - kafka
+      - zookeeper
+      - cdcservice
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql/eventuate
+      SPRING_DATASOURCE_USERNAME: mysqluser
+      SPRING_DATASOURCE_PASSWORD: mysqlpw
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.jdbc.Driver
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+
+
+  invoiceservice:
+    build: ./invoice-service/
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./build/libs:/app
+    links:
+      - mysql
+      - kafka
+      - zookeeper
+      - cdcservice
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql/eventuate
+      SPRING_DATASOURCE_USERNAME: mysqluser
+      SPRING_DATASOURCE_PASSWORD: mysqlpw
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.jdbc.Driver
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
 
 
   zookeeper:
