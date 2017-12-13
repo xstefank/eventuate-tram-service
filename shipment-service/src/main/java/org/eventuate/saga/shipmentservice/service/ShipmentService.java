@@ -6,6 +6,7 @@ import org.learn.eventuate.coreapi.ProductInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,5 +29,13 @@ public class ShipmentService {
     private int computeShipmentForProduct(ProductInfo productInfo) {
         //return testing stub for now
         return 42;
+    }
+
+    public void deleteShipment(String orderId) {
+        log.info("deleting shipment for order - " + orderId);
+
+        Shipment shipment = shipmentRepository.findByOrderId(orderId);
+        shipmentRepository.delete(shipment);
+        log.info(String.format("Shipment %s deleted", shipment));
     }
 }

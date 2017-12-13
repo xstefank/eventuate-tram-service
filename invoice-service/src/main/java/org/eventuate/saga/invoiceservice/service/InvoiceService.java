@@ -28,4 +28,13 @@ public class InvoiceService {
         //return testing stub
         return "This is not the invoice you are looking for";
     }
+
+    public void deleteInvoice(String orderId) {
+        log.info("deleting invoice for order - " + orderId);
+
+        Invoice invoice = invoiceRepository.findByOrderId(orderId);
+        invoiceRepository.delete(invoice);
+
+        log.info("invoice %s deleted", invoice);
+    }
 }
