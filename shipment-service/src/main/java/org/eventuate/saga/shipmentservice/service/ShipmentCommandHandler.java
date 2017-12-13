@@ -40,7 +40,7 @@ public class ShipmentCommandHandler {
 
         //testing compensation
         if (command.getProductInfo().getProductId().equals("failShipment")) {
-            return withFailure(new ParticipantFailureInfo(command.getOrderId(), null, "testing shipment failure"));
+            return withFailure(new ParticipantFailureInfo(command.getOrderId(), "N/A", "testing shipment failure"));
         }
 
         Shipment shipment = shipmentService.computeShipment(command.getOrderId(), command.getProductInfo());

@@ -36,13 +36,13 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
             .step()
               .invokeParticipant(this::requestShipment)
                 .onReply(ShipmentInfo.class, this::shipmentReply)
-              .withCompensation(this::shipmentCompensate)
                 .onReply(ParticipantFailureInfo.class, this::shipmentFailure)
+              .withCompensation(this::shipmentCompensate)
             .step()
               .invokeParticipant(this::requestInvoice)
                 .onReply(InvoiceInfo.class, this::invoiceReply)
-              .withCompensation(this::invoiceCompensate)
                 .onReply(ParticipantFailureInfo.class, this::invoiceFailure)
+              .withCompensation(this::invoiceCompensate)
             .step()
               .invokeParticipant(this::finishOrder)
             .build();
@@ -87,7 +87,7 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
     }
 
     private void shipmentFailure(OrderSagaData orderSagaData, ParticipantFailureInfo failureInfo) {
-        log.info(String.format("shipmentFailure() for %s with cause %s", orderSagaData.getOrderId(), failureInfo.getCause()));
+        log.info(String.format("shipmentFailure() for %s with cause '%s'", orderSagaData.getOrderId(), failureInfo.getCause()));
     }
 
     private CommandWithDestination requestInvoice(OrderSagaData orderSagaData) {
@@ -116,7 +116,7 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
     }
 
     private void invoiceFailure(OrderSagaData orderSagaData, ParticipantFailureInfo failureInfo) {
-        log.info(String.format("invoiceFailure() for %s with cause %s", orderSagaData.getOrderId(), failureInfo.getCause()));
+        log.info(String.format("invoiceFailure() for %s with cause '%s'", orderSagaData.getOrderId(), failureInfo.getCause()));
     }
 
     private CommandWithDestination finishOrder(OrderSagaData orderSagaData) {

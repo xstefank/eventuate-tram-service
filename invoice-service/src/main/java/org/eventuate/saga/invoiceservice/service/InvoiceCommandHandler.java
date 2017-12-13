@@ -39,7 +39,7 @@ public class InvoiceCommandHandler {
         RequestInvoiceCommand command = commandMessage.getCommand();
 
         if (command.getProductInfo().getProductId().equals("failInvoice")) {
-            return withFailure(new ParticipantFailureInfo(command.getOrderId(), null, "testing invoice failure"));
+            return withFailure(new ParticipantFailureInfo(command.getOrderId(), "N/A", "testing invoice failure"));
         }
 
         Invoice invoice = invoiceService.createInvoice(command.getOrderId(), command.getProductInfo());
