@@ -34,9 +34,9 @@ public class OrderController {
         return orderService.findAll();
     }
 
-    @GetMapping("/order/{id}")
-    public ResponseEntity<Order> findOne(@PathVariable String id) {
-        Order result = orderService.findOne(id);
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<Order> findOne(@PathVariable String orderId) {
+        Order result = orderService.findOne(orderId);
         return result != null ? ResponseEntity.ok(result) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
