@@ -1,0 +1,20 @@
+= eventuate-sagas
+
+Testing application using new Eventuate Tram saga API
+
+== Running
+
+1. ./gradlew clean build
+1. start docker
+1. docker-compose up -d --build
+1. start saga -
+`curl -X POST --header "Content-Type: application/json" --header "Accept: */*" -d "{\"comment\": \"testComment\", \"price\": 100, \"productId\": \"testProduct\"}" "http://localhost:8080/order-service/order"`
+  * for shipment failure - `\"productId\": \"failShipment\"`
+  * for invoice failure - `\"productId\": \"failInvoice\"`
+1. observe the logs for results -
+`docker container logs -f eventuatesagas_orderservice_1`
+
+=== Stopping and removing docker containers
+`docker-compose down --remove-orphans`
+
+
