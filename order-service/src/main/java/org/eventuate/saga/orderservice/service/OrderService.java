@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 public class OrderService {
 
@@ -32,5 +34,13 @@ public class OrderService {
         orderSagaManager.create(orderSagaData, Order.class, order.getId());
 
         return order;
+    }
+
+    public List<Order> findAll() {
+        return orderRepository.findAll();
+    }
+
+    public Order findOne(String id) {
+        return orderRepository.findOne(id);
     }
 }
