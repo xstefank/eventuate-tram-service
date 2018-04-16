@@ -36,8 +36,8 @@ public class OrderService {
         return order;
     }
 
-    public List<Order> findAll() {
-        return orderRepository.findAll();
+    public List<Order> findAllCompletedOrders() {
+        return orderRepository.findByCompletedIsTrue();
     }
 
     public Order findOne(String id) {

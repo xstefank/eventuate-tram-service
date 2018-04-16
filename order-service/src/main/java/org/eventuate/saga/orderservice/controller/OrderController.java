@@ -30,8 +30,8 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
-    public List<Order> getAllOrders() {
-        return orderService.findAll();
+    public List<Order> getAllCompletedOrders() {
+        return orderService.findAllCompletedOrders();
     }
 
     @GetMapping("/order/{orderId}")
