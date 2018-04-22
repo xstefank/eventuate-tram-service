@@ -5,7 +5,7 @@ import io.eventuate.tram.commands.consumer.CommandMessage;
 import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
-import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
+import org.eventuate.saga.orderservice.command.RejectOrderCommand;
 import org.eventuate.saga.orderservice.model.Order;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.learn.eventuate.Constants;
@@ -27,14 +27,14 @@ public class OrderCommandHandler {
     public CommandHandlers commandHandlers() {
         return SagaCommandHandlersBuilder
                 .fromChannel(Constants.ORDER_SERVICE)
-                .onMessage(RejectOrderSagaCommand.class, this::rejectOrder)
+                .onMessage(RejectOrderCommand.class, this::rejectOrder)
                 .onMessage(CompleteOrderCommand.class, this::completeOrder)
                 .build();
     }
 
-    public Message rejectOrder(CommandMessage<RejectOrderSagaCommand> commandMessage) {
-        log.info("received RejectOrderSagaCommand");
-        RejectOrderSagaCommand command = commandMessage.getCommand();
+    public Message rejectOrder(CommandMessage<RejectOrderCommand> commandMessage) {
+        log.info("received RejectOrderCommand");
+        RejectOrderCommand command = commandMessage.getCommand();
 
         orderRepository.delete(command.getOrderSagaData().getOrderId());
 

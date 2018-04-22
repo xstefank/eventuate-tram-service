@@ -4,7 +4,7 @@ import io.eventuate.tram.commands.consumer.CommandWithDestination;
 import io.eventuate.tram.sagas.orchestration.SagaDefinition;
 import io.eventuate.tram.sagas.simpledsl.SimpleSaga;
 import org.eventuate.saga.orderservice.command.CompleteOrderCommand;
-import org.eventuate.saga.orderservice.command.RejectOrderSagaCommand;
+import org.eventuate.saga.orderservice.command.RejectOrderCommand;
 import org.eventuate.saga.orderservice.model.Order;
 import org.eventuate.saga.orderservice.model.OrderRepository;
 import org.learn.eventuate.Constants;
@@ -55,7 +55,7 @@ public class OrderSaga implements SimpleSaga<OrderSagaData> {
     private CommandWithDestination rejectSaga(OrderSagaData orderSagaData) {
         log.info("rejectSaga()");
 
-        return send(new RejectOrderSagaCommand(orderSagaData))
+        return send(new RejectOrderCommand(orderSagaData))
                 .to(Constants.ORDER_SERVICE)
                 .build();
     }

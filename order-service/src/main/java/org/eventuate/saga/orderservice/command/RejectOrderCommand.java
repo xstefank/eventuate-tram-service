@@ -5,11 +5,11 @@ import lombok.NoArgsConstructor;
 import org.eventuate.saga.orderservice.saga.OrderSagaData;
 
 @NoArgsConstructor
-public class RejectOrderSagaCommand implements Command {
+public class RejectOrderCommand implements Command {
 
     private OrderSagaData orderSagaData;
 
-    public RejectOrderSagaCommand(OrderSagaData orderSagaData) {
+    public RejectOrderCommand(OrderSagaData orderSagaData) {
         this.orderSagaData = orderSagaData;
     }
 
