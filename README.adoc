@@ -1,14 +1,13 @@
 = eventuate-sagas
 
-Testing application using new Eventuate Tram saga API
+Testing application using http://eventuate.io/abouteventuatetram.html[Eventuate Tram] saga API
 
 == Running
 
-1. gradle wrapper
-1. ./gradlew clean build
+1. `./gradlew clean build`
 1. start docker
-1. docker-compose up -d --build
-1. start saga -
+1. `docker-compose up -d --build`
+1. test saga -
 `curl -X POST --header "Content-Type: application/json" --header "Accept: */*" -d "{\"comment\": \"testComment\", \"price\": 100, \"productId\": \"testProduct\"}" "http://localhost:8080/api/order"`
   * for shipment failure - `\"productId\": \"failShipment\"`
   * for invoice failure - `\"productId\": \"failInvoice\"`
